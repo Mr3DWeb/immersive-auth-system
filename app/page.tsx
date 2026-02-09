@@ -1,9 +1,9 @@
-import Scene from "./canvas/Scene";
+import Experience from './canvas/Experience'
 
 function Page(){
   return(
     <>
-      <Scene />
+      <Experience />
     
     </>
   )
