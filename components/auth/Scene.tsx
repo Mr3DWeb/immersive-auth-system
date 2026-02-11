@@ -3,13 +3,14 @@
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { WebGPURenderer } from "three/webgpu";
-import { ACESFilmicToneMapping,SRGBColorSpace } from "three/webgpu";
+import { ACESFilmicToneMapping,SRGBColorSpace } from "three";
+
 
 
 function Scene(){
   return(
     <>
-
+    <Suspense fallback={null}>
       <Canvas 
       gl={async(props)=>{
         // @ts-expect-error WebGPU renderer is experimental and not typed yet
@@ -21,12 +22,11 @@ function Scene(){
       }}
 
       >
-        <Suspense fallback={null}>
-            <color attach="background" args={['#fd0505']} /> 
-
-            
-        </Suspense>
-    </Canvas>
+      
+  
+        
+      </Canvas>
+    </Suspense>
 
 
     </>
