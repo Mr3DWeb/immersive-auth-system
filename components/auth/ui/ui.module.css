@@ -3,15 +3,18 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
   padding: 3rem 2.5rem;
-  width: 380px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  width: 25vw;
   color: #fff;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   transition: all 0.3s ease;
+  border-radius: 24px;
+  @supports (corner-shape: squircle) {
+        corner-shape: squircle;
+        border-radius: 80px; 
+  }
 }
 
 .title {
@@ -47,10 +50,14 @@
   font-size: 1rem;
   outline: none;
   transition: border-color 0.3s, background 0.3s;
+  @supports (corner-shape: squircle) {
+        corner-shape: squircle;
+        border-radius: 80px; 
+  }
 }
 
 .input:focus {
-  border-color: #818cf8; /* indigo-400 */
+  border-color: #818cf8;
   background: rgba(0, 0, 0, 0.4);
 }
 
@@ -65,6 +72,10 @@
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   margin-top: 1rem;
+  @supports (corner-shape: squircle) {
+        corner-shape: squircle;
+        border-radius: 80px; 
+  }
 }
 
 .button:hover {

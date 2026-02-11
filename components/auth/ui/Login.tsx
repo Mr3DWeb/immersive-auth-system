@@ -20,7 +20,7 @@ function Login(){
     <div className={styles.glassPanel}>
     <div>
       <h1 className={styles.title}>Welcome</h1>
-      <h2 className={styles.subtitle}> if you dont have Acc , create now </h2>
+      <h2 className={styles.subtitle}> Practice Project Login System </h2>
     </div>
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} >
       <div className={styles.inputGroup}>
