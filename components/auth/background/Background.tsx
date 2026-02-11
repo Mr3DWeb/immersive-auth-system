@@ -21,22 +21,35 @@ function Background(){
   const status = useAuthStore((state)=> state.status);
 
   const uMouse = useMemo (() => uniform(new Vector2(0,0)),[]);
-  const uStatus = useMemo (()=> uniform(0) ,[]); // 0: idle, 1: error, 2: success, 3: tunnel
+  const uStatus = useMemo (()=> uniform(0) ,[]); //0: Idle, 1: tunnel, 2: Success, 3: Error
 
 
   const shaderNode = useMemo(()=> createBGShader(uMouse, uStatus) ,[uMouse, uStatus]);
 
-   useEffect(() => {
-    let statusValue = 0
+ useEffect(() => {
+    let statusValue = 0;
     switch (status) {
-      case 'idle': statusValue = 0; break;
-      case 'error': statusValue = 1; break;
-      case 'success': statusValue = 2; break;
-      case 'tunnel': statusValue = 3; break;
+      case 'idle': 
+        statusValue = 0; 
+        break;
+      case 'tunnel':
+        statusValue = 1; 
+        break;
+      case 'success': 
+        statusValue = 2; 
+        break;
+      case 'error': 
+        statusValue = 3; 
+        break;
+      default:
+        statusValue = 0;
     }
-    // eslint-disable-next-line
+    
+   // eslint-disable-next-line
     uStatus.value = statusValue;
-  }, [status,uStatus]);
+    
+    console.log(`Background Logic: Status changed to '${status}' -> Shader Value: ${statusValue}`);
+  }, [status, uStatus]);
 
   // useFrame(({pointer})=>{
   //   uMouse.value.lerp(new Vector2(pointer.x,pointer.y),0.01);

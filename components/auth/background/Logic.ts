@@ -1,7 +1,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fn, uv, vec2, vec3, float, sin, cos, abs, smoothstep, time, length, min, max } from 'three/tsl';
+import {If, Fn, uv, vec2, vec3, float, sin, cos, abs, smoothstep, time, length, min, max } from 'three/tsl';
 
 
 const sdSegment = Fn(([p, a, b]) => {
