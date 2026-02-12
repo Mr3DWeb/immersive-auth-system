@@ -56,6 +56,7 @@ function Background({setRef}:BackgroundProps){
       case 'success': targets.success = 1; break;
       case 'error': targets.error = 1; break;
     }
+    console.log(status)
 
     const duration = 1.0; // change view speed
 

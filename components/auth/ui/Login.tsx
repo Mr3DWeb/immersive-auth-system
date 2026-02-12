@@ -22,12 +22,13 @@ function Login(){
       // شبیه‌سازی درخواست شبکه (Fake API)
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      const isSuccess = Math.random() > 0.5; 
+      const isSuccess = true; 
 
       if (isSuccess) {
         // اگر موفق بود:
         triggerSuccess();
-        setView('dashboard');
+        setTimeout(()=> setView('dashboard'),1000)
+        
       } else {
         // اگر ناموفق بود:
         triggerError();

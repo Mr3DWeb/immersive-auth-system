@@ -68,7 +68,8 @@ function AnimationManager(){
         setStatus('idle');
       }
      });
-      tl.to(camera.position, {
+     tl.to({}, { duration: 0.1, onStart: () => setStatus('tunnel') })
+      .to(camera.position, {
         z: -3,
         duration: 2,
         ease: 'power2.inOut',
