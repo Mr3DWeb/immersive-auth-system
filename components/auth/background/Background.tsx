@@ -43,7 +43,6 @@ function Background({setRef}:BackgroundProps){
   );
 
   useEffect(() => {
-    // تنظیم وضعیت هدف برای هر ۴ متغیر
     const targets = {
       idle: 0,
       tunnel: 0,
@@ -58,38 +57,29 @@ function Background({setRef}:BackgroundProps){
       case 'error': targets.error = 1; break;
     }
 
-    // نکته کلیدی برای Morphing تمیز:
-    // ما از GSAP می‌خواهیم که مقادیر را تغییر دهد.
-    // چون در شیدر از تقسیم بر مجموع وزن‌ها استفاده کردیم (Average)،
-    // مهم نیست مجموع دقیقاً ۱ باشد، اما نباید همه همزمان ۰ شوند.
-    
-    const duration = 1.0; // سرعت تغییر شکل (۱ ثانیه)
+    const duration = 1.0; // change view speed
 
     gsap.to(uAlphaIdle, { value: targets.idle, duration, ease: "power2.inOut" });
     gsap.to(uAlphaTunnel, { value: targets.tunnel, duration, ease: "power2.inOut" });
-    gsap.to(uAlphaSuccess, { value: targets.success, duration, ease: "back.out(1.2)" }); // کمی حالت ارتجاعی
-    gsap.to(uAlphaError, { value: targets.error, duration, ease: "elastic.out(1, 0.5)" }); // لرزش برای ارور
+    gsap.to(uAlphaSuccess, { value: targets.success, duration, ease: "back.out(1.2)" });
+    gsap.to(uAlphaError, { value: targets.error, duration, ease: "elastic.out(1, 0.5)" });
 
   }, [status, uAlphaIdle, uAlphaTunnel, uAlphaSuccess, uAlphaError]);
 
   useFrame(({ pointer }) => {
     if (isMobile) {
-      // مطمئن می‌شویم ماوس در حالت خنثی (بیرون صفحه) می‌ماند تا افکت گیر نکند
-      // فقط اگر مقدارش قبلاً 10 نیست ست می‌کنیم تا سربار کمتری داشته باشد
       if (uMouse.value.x !== 10) uMouse.value.set(10, 10);
       return; 
     }
-    // 1. محاسبه مختصات هدف (نرمال شده 0 تا 1)
+
     let targetX = (pointer.x + 1) / 2;
-    // تغییر let به const برای targetY چون مقدارش تغییر نمی‌کند
     const targetY = (pointer.y + 1) / 2;
 
-    // 2. اصلاح جهت ماوس وقتی پشت صفحه هستیم (SignUp)
     if (view === 'signup') {
       targetX = 1 - targetX;
     }
 
-    // 3. اعمال حرکت نرم (Lerp)
+    // Lerp
     const current = uMouse.value;
     
     const nextX = current.x + (targetX - current.x) * 0.1;

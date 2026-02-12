@@ -4,11 +4,14 @@ import { useState } from "react";
 
 const SignUp = () => {
   const { setView } = useAuthStore();
+  const triggerSuccess = useAuthStore((state) => state.triggerSuccess);
   const [loading, setLoading] = useState(false);
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    triggerSuccess();
     // شبیه سازی ثبت نام
     setTimeout(() => {
       setLoading(false);

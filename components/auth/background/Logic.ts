@@ -2,7 +2,6 @@
 // @ts-nocheck
 import { Fn, uv, vec2, vec3, float, sin, cos, abs, time, length, min, max, mix, smoothstep, distance, normalize } from 'three/tsl';
 
-// --- توابع کمکی هندسی (SDF) ---
 const sdSegment = Fn(([p, a, b]) => {
   const pa = p.sub(a);
   const ba = b.sub(a);
@@ -23,33 +22,19 @@ const rotate = Fn(([p, angle])=>{
   );
 });
 
-// --- افکت چاقو و اعوجاج (جدید) ---
-// این تابع مختصات UV را می‌گیرد و اگر به ماوس نزدیک باشد، آن را "هل" می‌دهد
+// Mouse effect
 const distortUV = Fn(([uvNode, mousePos]) => {
     const dist = distance(uvNode, mousePos);
-    
-    // شعاع اثرگذاری (مثلا 0.25 از صفحه)
     const radius = float(0.25);
-    
-    // قدرت هل دادن (هرچه عدد بزرگتر، خطوط بیشتر پرت می‌شوند)
+    // wave power
     const strength = float(0.15); 
-    
-    // محاسبه نیرو: در مرکز 1 است و در لبه شعاع 0 می‌شود
+
     const force = smoothstep(radius, float(0.0), dist);
-    
-    // جهت از ماوس به سمت پیکسل فعلی
     const dir = normalize(uvNode.sub(mousePos));
-    
-    // نکته مهم: برای اینکه خطوط "دور" شوند، باید UV را "به سمت" ماوس بکشیم
-    // (چون ما داریم محل سمپل کردن را تغییر می‌دهیم)
     return uvNode.sub(dir.mul(force).mul(strength));
 });
 
-
-// --- الگوها (بر اساس UV تغییر یافته) ---
-
 const getWaveDist = Fn(([uvNode, timeVar]) => {
-    // موج‌ها با کمی تغییر پارامتر برای زیبایی بیشتر
     const y1 = sin(uvNode.x.mul(2.5).add(timeVar.mul(0.6))).mul(0.12).add(0.5);
     const d1 = abs(uvNode.y.sub(y1));
 
@@ -91,16 +76,13 @@ const getTunnelDist = Fn(([uvNode, timeVar]) => {
 
 const createBGShader = (uMouse, uAlphaIdle, uAlphaTunnel, uAlphaSuccess, uAlphaError) => {
   return Fn(() => {
-    const rawUV = uv(); // UV اصلی
+    const rawUV = uv(); //main UV
     const timeVar = time.mul(0.5);
 
-    // 1. اعمال اعوجاج ماوس روی UV
-    // این باعث می‌شود تمام شکل‌های بعدی (موج، تونل و...) تحت تاثیر این خمیدگی قرار بگیرند
     const distortedUVNode = distortUV(rawUV, uMouse);
 
-    // 2. محاسبه فاصله‌ها با UV خمیده شده
     const dWave = getWaveDist(distortedUVNode, timeVar);
-    const dTunnel = getTunnelDist(distortedUVNode, timeVar); // تونل هم واکنش نشان می‌دهد
+    const dTunnel = getTunnelDist(distortedUVNode, timeVar);
     const dCheck = getCheckDist(distortedUVNode);
     const dCross = getCrossDist(distortedUVNode);
 
@@ -134,16 +116,13 @@ const createBGShader = (uMouse, uAlphaIdle, uAlphaTunnel, uAlphaSuccess, uAlphaE
     const thickness = float(0.003); 
     const shapeGlow = thickness.div(abs(finalDist)).mul(0.5);
     
-    // محاسبه درخشش ماوس (رد آبی)
-    // استفاده از UV اصلی برای موقعیت ماوس (تا درخشش خودش کج نشود)
+    // Mouse Glow
     const mouseDist = distance(rawUV, uMouse);
-    // هرچه نزدیکتر، روشن‌تر (مثل یک نقطه نورانی)
     const mouseGlowIntensity = float(0.015).div(abs(mouseDist).add(0.05)).mul(float(0.8));
     
-    // رنگ ماوس (آبی الکتریکی)
+    //Mouse Effect Color
     const mouseColor = vec3(0.2, 0.6, 1.0); 
 
-    // ترکیب رنگ نهایی: (رنگ شکل * درخشش شکل) + (رنگ ماوس * درخشش ماوس)
     return baseColor.mul(shapeGlow).add(mouseColor.mul(mouseGlowIntensity));
   })();
 };

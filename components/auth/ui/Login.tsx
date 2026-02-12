@@ -26,7 +26,7 @@ function Login(){
 
       if (isSuccess) {
         // اگر موفق بود:
-        triggerSuccess(); // شیدر سبز می‌شود و بعد از کمی مکث میرود به داشبورد
+        triggerSuccess();
       } else {
         // اگر ناموفق بود:
         triggerError();
@@ -34,7 +34,7 @@ function Login(){
 
     } catch (error) {
       console.error(error);
-      triggerError(); // شیدر قرمز می‌شود
+      triggerError(); 
     } finally {
       setLoading(false);
     }
