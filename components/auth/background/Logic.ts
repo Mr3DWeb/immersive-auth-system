@@ -1,9 +1,8 @@
 /* eslint-disable */
 // @ts-nocheck
+import { Fn, uv, vec2, vec3, float, sin, cos, abs, time, length, min, max, mix, smoothstep } from 'three/tsl';
 
-import {If, Fn, uv, vec2, vec3, float, sin, cos, abs, smoothstep, time, length, min, max } from 'three/tsl';
-
-
+// --- توابع کمکی هندسی (SDF) ---
 const sdSegment = Fn(([p, a, b]) => {
   const pa = p.sub(a);
   const ba = b.sub(a);
@@ -24,91 +23,119 @@ const rotate = Fn(([p, angle])=>{
   );
 });
 
+// --- الگوها (این بار فاصله برمی‌گردانند) ---
 
-const getWavePattern = Fn(([uvNode, timeVar]) => {
+// 1. فاصله تا خطوط موج‌دار (Idle)
+const getWaveDist = Fn(([uvNode, timeVar]) => {
+    // فاصله تا موج ۱
+    const y1 = sin(uvNode.x.mul(2.5).add(timeVar.mul(0.6))).mul(0.12).add(0.5);
+    const d1 = abs(uvNode.y.sub(y1));
 
-    const wave1 = sin(uvNode.x.mul(2.5).add(timeVar.mul(0.6))).mul(0.12).add(0.5);
-    const glow1 = float(0.003).div(abs(uvNode.y.sub(wave1))).mul(0.15);
+    // فاصله تا موج ۲
+    const y2 = cos(uvNode.x.mul(4.5).sub(timeVar.mul(1.1))).mul(0.08).add(0.35);
+    const d2 = abs(uvNode.y.sub(y2));
 
-    const wave2 = cos(uvNode.x.mul(4.5).sub(timeVar.mul(1.1))).mul(0.08).add(0.35);
-    const glow2 = float(0.002).div(abs(uvNode.y.sub(wave2))).mul(0.12);
+    // فاصله تا موج ۳
+    const y3 = sin(uvNode.x.mul(6.0).add(timeVar.mul(1.4))).mul(0.05).add(0.65);
+    const d3 = abs(uvNode.y.sub(y3));
 
-    const wave3 = sin(uvNode.x.mul(6.0).add(timeVar.mul(1.4))).mul(0.05).add(0.65);
-    const glow3 = float(0.0015).div(abs(uvNode.y.sub(wave3))).mul(0.1);
+    // فاصله تا موج ۴
+    const y4 = cos(uvNode.x.mul(1.5).add(timeVar.mul(0.2))).mul(0.15).add(0.45);
+    const d4 = abs(uvNode.y.sub(y4));
 
-    const wave4 = cos(uvNode.x.mul(1.5).add(timeVar.mul(0.2))).mul(0.15).add(0.45);
-    const glow4 = float(0.004).div(abs(uvNode.y.sub(wave4))).mul(0.08);
-
-    return glow1.add(glow2).add(glow3).add(glow4);
+    // برگرداندن "کمترین" فاصله (یعنی نزدیک‌ترین خط)
+    return min(d1, min(d2, min(d3, d4)));
 });
 
-
-const getCrossPattern = Fn(([uvNode]) => {
+// 2. فاصله تا ضربدر (Error)
+const getCrossDist = Fn(([uvNode]) => {
     const p = uvNode.sub(0.5); 
     const d1 = sdSegment(p, vec2(-0.3, -0.3), vec2(0.3, 0.3));
     const d2 = sdSegment(p, vec2(-0.3, 0.3), vec2(0.3, -0.3));
-    const d = min(d1, d2);
-    return float(0.012).div(d).mul(0.3); 
+    return min(d1, d2);
 });
 
-
-const getCheckPattern = Fn(([uvNode]) => {
+// 3. فاصله تا تیک (Success)
+const getCheckDist = Fn(([uvNode]) => {
     const p = uvNode.sub(0.5);
+    // کمی جابجایی تا تیک وسط بیفتد
     const d1 = sdSegment(p, vec2(-0.2, 0.0), vec2(-0.05, -0.15));
     const d2 = sdSegment(p, vec2(-0.05, -0.15), vec2(0.3, 0.3));
-    const d = min(d1, d2);
-    return float(0.008).div(d).mul(0.2);
+    return min(d1, d2);
 });
 
-
-const getTunnelPattern = Fn(([uvNode, timeVar]) => {
+// 4. فاصله تا دایره‌های تونل (Loading)
+const getTunnelDist = Fn(([uvNode, timeVar]) => {
     const p = uvNode.sub(0.5);
     const rotatedP = rotate(p, timeVar.mul(2.0));
-
-    const radius = sin(timeVar.mul(3.0)).mul(0.1).add(0.25);
-    const d = abs(sdCircle(rotatedP, radius));
-
-    const angle = rotatedP.y.atan2(rotatedP.x);
-    const dash = sin(angle.mul(8.0).add(timeVar.mul(5.0))).add(1.0);
     
-    return float(0.008).div(d).mul(0.2).mul(dash);
+    // دایره اصلی
+    const r1 = sin(timeVar.mul(3.0)).mul(0.1).add(0.25);
+    const d1 = abs(sdCircle(rotatedP, r1));
+    
+    // یک دایره بزرگتر برای افکت بیشتر
+    const d2 = abs(sdCircle(rotatedP, float(0.4)));
+
+    return min(d1, d2);
 });
 
-const createBGShader = (uMouse, uStatus) => {
+
+// --- تابع اصلی ساخت شیدر ---
+ const createBGShader = (uMouse, uAlphaIdle, uAlphaTunnel, uAlphaSuccess, uAlphaError) => {
   return Fn(() => {
     const uvNode = uv();
     const timeVar = time.mul(0.5);
+
+    // محاسبه فاصله‌های خام برای هر ۴ حالت
+    const dWave = getWaveDist(uvNode, timeVar);
+    const dTunnel = getTunnelDist(uvNode, timeVar);
+    const dCheck = getCheckDist(uvNode);
+    const dCross = getCrossDist(uvNode);
+
+    // --- MORPHING LOGIC ---
+    // ایده: میانگین وزنی فاصله‌ها
+    // وقتی uAlphaError زیاد می‌شود، شکل خطوط خم می‌شود تا شبیه ضربدر شود
     
-    const finalIntensity = float(0.0).toVar();
-    const finalColor = vec3(0.0).toVar();
+    const totalAlpha = uAlphaIdle.add(uAlphaTunnel).add(uAlphaSuccess).add(uAlphaError);
+    // جلوگیری از تقسیم بر صفر (یک مقدار خیلی کوچک اضافه می‌کنیم)
+    const safeTotal = max(totalAlpha, 0.001);
 
+    const weightedDist = float(0.0).toVar();
+    weightedDist.addAssign(dWave.mul(uAlphaIdle));
+    weightedDist.addAssign(dTunnel.mul(uAlphaTunnel));
+    weightedDist.addAssign(dCheck.mul(uAlphaSuccess));
+    weightedDist.addAssign(dCross.mul(uAlphaError));
+    
+    const finalDist = weightedDist.div(safeTotal);
+
+
+    // --- COLOR BLENDING ---
     const colIdle = vec3(0.3, 0.4, 1.0);     // Blue
-    const colLoading = vec3(0.6, 0.2, 1.0);  // peple
-    const colSuccess = vec3(0.2, 1.0, 0.5);  // green
-    const colError = vec3(1.0, 0.1, 0.2);    // red
+    const colLoading = vec3(0.6, 0.2, 1.0);  // Purple
+    const colSuccess = vec3(0.2, 1.0, 0.5);  // Green
+    const colError = vec3(1.0, 0.1, 0.2);    // Red
 
+    const weightedColor = vec3(0.0).toVar();
+    weightedColor.addAssign(colIdle.mul(uAlphaIdle));
+    weightedColor.addAssign(colLoading.mul(uAlphaTunnel));
+    weightedColor.addAssign(colSuccess.mul(uAlphaSuccess));
+    weightedColor.addAssign(colError.mul(uAlphaError));
 
-    const patWave = getWavePattern(uvNode, timeVar);
-    const patLoading = getTunnelPattern(uvNode, timeVar);
-    const patSuccess = getCheckPattern(uvNode);
-    const patCross = getCrossPattern(uvNode);
+    const finalColor = weightedColor.div(safeTotal);
 
-
-    If(uStatus.equal(0), () => {
-        finalIntensity.assign(patWave);
-        finalColor.assign(colIdle);
-    }).ElseIf(uStatus.equal(1), () => {
-        finalIntensity.assign(patLoading);
-        finalColor.assign(colLoading);
-    }).ElseIf(uStatus.equal(2), () => {
-        finalIntensity.assign(patSuccess);
-        finalColor.assign(colSuccess);
-    }).ElseIf(uStatus.equal(3), () => {
-        finalIntensity.assign(patCross);
-        finalColor.assign(colError);
-    });
-
-    return finalColor.mul(finalIntensity);
+    // --- GLOW CALCULATION ---
+    // حالا که شکل نهایی (finalDist) را داریم، به آن نور می‌دهیم
+    // هرچه فاصله کمتر (نزدیک‌تر به خط)، نور بیشتر
+    
+    // ضخامت خطوط
+    const thickness = float(0.003); 
+    const glow = thickness.div(abs(finalDist)).mul(0.5);
+    
+    // کمی افکت درخشش اضافی برای تونل (اختیاری)
+    // اینجا از پترن دش برای تونل استفاده نمیکنیم تا مورف تمیز بماند
+    // اما می‌توان شدت نور را با زمان تغییر داد
+    
+    return finalColor.mul(glow);
   })();
 };
 

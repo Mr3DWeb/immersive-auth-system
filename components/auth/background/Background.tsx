@@ -1,12 +1,13 @@
 import { useMemo,useEffect } from "react";
-import { useFrame, extend } from "@react-three/fiber";
-import { Vector2, DoubleSide } from "three";
+import { extend } from "@react-three/fiber";
+import { Vector2 } from "three";
 import { MeshBasicNodeMaterial } from "three/webgpu";
 import { uniform } from "three/tsl";
 import createBGShader from "./Logic";
 import useAuthStore from "../store/store";
 import useResponsiveData from "../hooks/useResponsiveData";
 import type { Mesh } from "three";
+import gsap from 'gsap';
 
 extend ({MeshBasicNodeMaterial});
 
@@ -26,45 +27,53 @@ function Background({setRef}:BackgroundProps){
 
   const status = useAuthStore((state)=> state.status);
 
-  const uMouse = useMemo (() => uniform(new Vector2(0,0)),[]);
-  const uStatus = useMemo (()=> uniform(0) ,[]); //0: Idle, 1: tunnel, 2: Success, 3: Error
+  const uMouse = useMemo(() => uniform(new Vector2(0, 0)), []);
+  const uAlphaIdle = useMemo(() => uniform(1), []);
+  const uAlphaTunnel = useMemo(() => uniform(0), []);
+  const uAlphaSuccess = useMemo(() => uniform(0), []);
+  const uAlphaError = useMemo(() => uniform(0), []);
 
 
-  const shaderNode = useMemo(()=> createBGShader(uMouse, uStatus) ,[uMouse, uStatus]);
+  const shaderNode = useMemo(
+    () => createBGShader(uMouse, uAlphaIdle, uAlphaTunnel, uAlphaSuccess, uAlphaError),
+    [uMouse, uAlphaIdle, uAlphaTunnel, uAlphaSuccess, uAlphaError]
+  );
 
- useEffect(() => {
-    let statusValue = 0;
+  useEffect(() => {
+    // تنظیم وضعیت هدف برای هر ۴ متغیر
+    const targets = {
+      idle: 0,
+      tunnel: 0,
+      success: 0,
+      error: 0
+    };
+
     switch (status) {
-      case 'idle': 
-        statusValue = 0; 
-        break;
-      case 'tunnel':
-        statusValue = 1; 
-        break;
-      case 'success': 
-        statusValue = 2; 
-        break;
-      case 'error': 
-        statusValue = 3; 
-        break;
-      default:
-        statusValue = 0;
+      case 'idle': targets.idle = 1; break;
+      case 'tunnel': targets.tunnel = 1; break;
+      case 'success': targets.success = 1; break;
+      case 'error': targets.error = 1; break;
     }
-    
-   // eslint-disable-next-line
-    uStatus.value = statusValue;
-    
-    console.log(`Background Logic: Status changed to '${status}' -> Shader Value: ${statusValue}`);
-  }, [status, uStatus]);
 
-  // useFrame(({pointer})=>{
-  //   uMouse.value.lerp(new Vector2(pointer.x,pointer.y),0.01);
-  // })
+    // نکته کلیدی برای Morphing تمیز:
+    // ما از GSAP می‌خواهیم که مقادیر را تغییر دهد.
+    // چون در شیدر از تقسیم بر مجموع وزن‌ها استفاده کردیم (Average)،
+    // مهم نیست مجموع دقیقاً ۱ باشد، اما نباید همه همزمان ۰ شوند.
+    
+    const duration = 1.0; // سرعت تغییر شکل (۱ ثانیه)
+
+    gsap.to(uAlphaIdle, { value: targets.idle, duration, ease: "power2.inOut" });
+    gsap.to(uAlphaTunnel, { value: targets.tunnel, duration, ease: "power2.inOut" });
+    gsap.to(uAlphaSuccess, { value: targets.success, duration, ease: "back.out(1.2)" }); // کمی حالت ارتجاعی
+    gsap.to(uAlphaError, { value: targets.error, duration, ease: "elastic.out(1, 0.5)" }); // لرزش برای ارور
+
+  }, [status, uAlphaIdle, uAlphaTunnel, uAlphaSuccess, uAlphaError]);
+
 
   return (
     <mesh ref={setRef}>
       <planeGeometry args={[responsiveData.planeArgs.x, responsiveData.planeArgs.y, 32, 32]} />
-      <meshBasicNodeMaterial colorNode={shaderNode} side={DoubleSide} />
+      <meshBasicNodeMaterial colorNode={shaderNode} side={2} />
     </mesh>
   )
 

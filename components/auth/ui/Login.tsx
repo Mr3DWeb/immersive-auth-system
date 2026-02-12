@@ -22,7 +22,7 @@ function Login(){
       // شبیه‌سازی درخواست شبکه (Fake API)
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      const isSuccess = Math.random() > 0.3; // 70% شانس موفقیت تستی
+      const isSuccess = Math.random() > 0.5; 
 
       if (isSuccess) {
         // اگر موفق بود:
