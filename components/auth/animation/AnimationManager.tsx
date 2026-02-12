@@ -7,12 +7,10 @@ function AnimationManager(){
   const {camera} = useThree();
 
   const view = useAuthStore((state) => state.view);
-  const status = useAuthStore((state) => state.status);
   const setStatus = useAuthStore((state) => state.setStatus);
   const setIsAnimating = useAuthStore((state) => state.setIsAnimating);
 
   const prevView = useRef(view);
-  const prevStatus = useRef(status);
 
   //---Animation Function----
   const animateToSignUp = () => {
@@ -21,78 +19,67 @@ function AnimationManager(){
     const tl = gsap.timeline({
       onComplete: () => {
         setIsAnimating(false);
+        setStatus('idle');
       }
     });
     
     tl.to({}, { duration: 0.1, onStart: () => setStatus('tunnel') })
       .to(camera.position, {
-        z: -6,
-        duration: 2.5,
+        z: -3,
+        duration: 2,
         ease: 'power2.inOut',
       }, 0)
       .to(camera.rotation, {
         y: Math.PI,
-        duration: 2.5,
+        duration: 2,
         ease: 'power2.inOut',
       }, 0)
-      .call(() => setStatus('idle'));
   };
 
   const animateToLogin = () => {
     setIsAnimating(true);
     
     const tl = gsap.timeline({
-      onComplete: () => setIsAnimating(false)
+      onComplete: () => {
+        setIsAnimating(false);
+        setStatus('idle');
+      }
     });
 
     tl.to({}, { duration: 0.1, onStart: () => setStatus('tunnel') })
       .to(camera.position, {
-        z: 6, // برگشت به جلو
-        duration: 2.5,
+        z: 3,
+        duration: 2,
         ease: 'power2.inOut',
       }, 0)
       .to(camera.rotation, {
-        y: 0, // چرخش به حالت 0
-        duration: 2.5,
+        y: 0,
+        duration: 2,
         ease: 'power2.inOut',
       }, 0)
-      .call(() => setStatus('idle'));
   };
 
   const animateToDashboard = () => {
-    // انیمیشن خروج از صحنه لاگین
     gsap.to(camera.position, {
-      z: 20, // دور شدن
+      z: 20,
       y: 10,
       duration: 2,
       ease: 'power3.in'
     });
-    // اینجا می‌توانید روتینگ Next.js را صدا بزنید یا کامپوننت داشبورد را نمایش دهید
   };
 
   //---useEffects
   useEffect(()=>{
-    if(prevView.current !== view){
-      if(view === 'signup' && prevView.current === 'login'){
-        animateToSignUp();
-      } else if (view === 'login' && prevView.current === 'signup') {
-        animateToLogin();
-      } else if (view === 'dashboard') {
-        animateToDashboard();
-      }
-      prevView.current = view;
+   if (prevView.current === view) return;
+    if (view === 'signup' && prevView.current === 'login') {
+      animateToSignUp();
+    } else if (view === 'login' && prevView.current === 'signup') {
+      animateToLogin();
+    } else if (view === 'dashboard') {
+      animateToDashboard();
     }
-  },[view]);
-
-  useEffect(()=>{
-    if (status === 'success' && prevStatus.current !== 'success'){
-      setTimeout(() => {
-        useAuthStore.getState().setView('dashboard');
-      }, 1500);
-    }
-    prevStatus.current = status;
-  },[status]);
-
+    prevView.current = view;
+  }, [view]);
 
   return null;
 }
