@@ -3,21 +3,50 @@ import React, { useState } from "react";
 import  styles  from "./ui.module.css";
 
 function Login(){
-  const { triggerTransition, setView, triggerError } = useAuthStore();
+
   const [loading , setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent)=>{
+  const setView = useAuthStore((state) => state.setView);
+  const triggerError = useAuthStore((state) => state.triggerError);
+  const triggerSuccess = useAuthStore((state) => state.triggerSuccess);
+  const isAnimating = useAuthStore((state) => state.isAnimating); 
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    setTimeout(()=>{
-      triggerTransition();
+    // --- Backend Integration Placeholder ---
+    try {
+      // const response = await fetch('/api/login', { body: ... });
+      
+      // شبیه‌سازی درخواست شبکه (Fake API)
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const isSuccess = Math.random() > 0.3; // 70% شانس موفقیت تستی
+
+      if (isSuccess) {
+        // اگر موفق بود:
+        triggerSuccess(); // شیدر سبز می‌شود و بعد از کمی مکث میرود به داشبورد
+      } else {
+        // اگر ناموفق بود:
+        triggerError();
+      }
+
+    } catch (error) {
+      console.error(error);
+      triggerError(); // شیدر قرمز می‌شود
+    } finally {
       setLoading(false);
-    },1500);
-  }
+    }
+  };
+
+  const handleGoToSignUp = () => {
+    if (loading || isAnimating) return;
+    setView('signup');
+  };
 
   return(
-    <div className={styles.glassPanel}>
+    <div className={styles.glassPanel} style={{opacity: isAnimating ? 0 : 1 }}>
     <div>
       <h1 className={styles.title}>Welcome</h1>
       <h2 className={styles.subtitle}> Practice Project Login System </h2>
@@ -45,17 +74,10 @@ function Login(){
     </form>
 
     <button 
-        onClick={() => setView('signup')} 
+       onClick={handleGoToSignUp}
         className={styles.linkButton}
       >
         Dont have an account? Sign Up
-      </button>
-
-      <button 
-        onClick={triggerError} 
-        style={{ opacity: 0.3, fontSize: '0.7rem', color: 'red', background: 'transparent', border: 'none', cursor: 'pointer' }}
-      >
-        (Dev Only: Test Error)
       </button>
     </div>
   )

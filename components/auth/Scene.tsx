@@ -10,6 +10,7 @@ import useResponsiveData from "./hooks/useResponsiveData";
 import Background from "./background/Background";
 import Login from "./ui/Login";
 import SignUp from "./ui/SignUp";
+import AnimationManager from "./animation/AnimationManager";
 
 import type { Mesh } from "three";
 
@@ -49,8 +50,12 @@ function Scene(){
       </Html>
 
         <Background setRef={setBlockerRef} />
+
+        <AnimationManager />
       </Canvas>
     </Suspense>
+
+    
 
 
     </>

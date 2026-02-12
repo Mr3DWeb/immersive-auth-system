@@ -41,6 +41,7 @@ const useAuthStore = create<AuthState>((set, get)=>({
 
    setTimeout(() => {
        set({ view: 'dashboard' });
+       set({ status: 'idle' });
     }, 1500); 
   },
 
