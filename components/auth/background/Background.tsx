@@ -1,5 +1,5 @@
 import { useMemo,useEffect } from "react";
-import { extend } from "@react-three/fiber";
+import { extend, useFrame } from "@react-three/fiber";
 import { Vector2 } from "three";
 import { MeshBasicNodeMaterial } from "three/webgpu";
 import { uniform } from "three/tsl";
@@ -27,7 +27,7 @@ function Background({setRef}:BackgroundProps){
 
   const status = useAuthStore((state)=> state.status);
 
-  const uMouse = useMemo(() => uniform(new Vector2(0, 0)), []);
+  const uMouse = useMemo(() => uniform(new Vector2(10, 10)), []);
   const uAlphaIdle = useMemo(() => uniform(1), []);
   const uAlphaTunnel = useMemo(() => uniform(0), []);
   const uAlphaSuccess = useMemo(() => uniform(0), []);
@@ -68,6 +68,17 @@ function Background({setRef}:BackgroundProps){
     gsap.to(uAlphaError, { value: targets.error, duration, ease: "elastic.out(1, 0.5)" }); // لرزش برای ارور
 
   }, [status, uAlphaIdle, uAlphaTunnel, uAlphaSuccess, uAlphaError]);
+
+  useFrame(({ mouse }) => {
+    // تبدیل مختصات ماوس (-1 تا 1) به مختصات UV (0 تا 1)
+    const targetX = (mouse.x + 1) / 2;
+    const targetY = (mouse.y + 1) / 2;
+
+    // اعمال حرکت نرم (Lerp) برای اینکه "دنباله" حس بهتری داشته باشد
+    // ضریب 0.1 باعث می‌شود ماوس با کمی تاخیر دنبال شود که حس "شناوری در آب" می‌دهد
+    uMouse.value.x += (targetX - uMouse.value.x) * 0.1;
+    uMouse.value.y += (targetY - uMouse.value.y) * 0.1;
+  });
 
 
   return (
