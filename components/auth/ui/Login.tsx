@@ -5,6 +5,8 @@ import  styles  from "./ui.module.css";
 function Login(){
 
   const [loading , setLoading] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const setView = useAuthStore((state) => state.setView);
   const triggerError = useAuthStore((state) => state.triggerError);
@@ -21,7 +23,8 @@ function Login(){
       
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      const isSuccess = true; 
+      let isSuccess = false;
+      if (username === "1" && password === "1") isSuccess=true
 
       if (isSuccess) {
         triggerSuccess();
@@ -63,6 +66,9 @@ function Login(){
             placeholder="Username" 
             className={styles.input} 
             required 
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            
           />
         </div>
          <div className={styles.inputGroup}>
@@ -71,6 +77,8 @@ function Login(){
             placeholder="Password" 
             className={styles.input} 
             required 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
          <button type="submit" className={styles.button} disabled={loading }>
