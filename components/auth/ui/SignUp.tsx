@@ -5,6 +5,7 @@ import { useState } from "react";
 const SignUp = () => {
   const { setView } = useAuthStore();
   const triggerSuccess = useAuthStore((state) => state.triggerSuccess);
+  const isAnimating = useAuthStore((state) => state.isAnimating);
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'error' | 'success' | null, text: string }>({
     type: null,
@@ -27,7 +28,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className={styles.glassPanel}>
+    <div className={styles.glassPanel} style={{opacity: isAnimating ? 0 : 1, pointerEvents: isAnimating ? 'none' : 'auto' }}>
       <div>
         <h2 className={styles.title}>Join the Void</h2>
         <p className={styles.subtitle}>Create your account to start the journey.</p>

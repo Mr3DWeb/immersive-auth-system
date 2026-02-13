@@ -6,6 +6,7 @@ function Dashboard(){
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const setView = useAuthStore((state) => state.setView);
+  const isAnimating = useAuthStore((state) => state.isAnimating);
   
   const handleLogoutClick = () => {
     setShowLogoutConfirm(true);
@@ -21,7 +22,7 @@ function Dashboard(){
   };
 
    return (
-    <div className={`${styles.glassPanel} ${styles.dashboardPanel}`}>
+    <div className={`${styles.glassPanel} ${styles.dashboardPanel}`} style={{opacity: isAnimating ? 0 : 1, pointerEvents: isAnimating ? 'none' : 'auto' }}>
 
       <div className={styles.dashboardHeader}>
         <h2 className={styles.title}>Dashboard</h2>

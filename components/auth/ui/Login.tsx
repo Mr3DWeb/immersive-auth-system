@@ -55,7 +55,7 @@ function Login(){
   };
 
   return(
-    <div className={styles.glassPanel} style={{opacity: isAnimating ? 0 : 1 }}>
+    <div className={styles.glassPanel} style={{opacity: isAnimating ? 0 : 1, pointerEvents: isAnimating ? 'none' : 'auto' }}>
     <div>
       <h1 className={styles.title}>Welcome</h1>
  
