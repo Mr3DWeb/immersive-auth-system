@@ -27,12 +27,12 @@ function AnimationManager(){
     tl.to({}, { duration: 0.1, onStart: () => setStatus('tunnel') })
       .to(camera.position, {
         z: -3,
-        duration: 2,
+        duration: 4,
         ease: 'power2.inOut',
       }, 0)
       .to(camera.rotation, {
         y: Math.PI,
-        duration: 2,
+        duration: 4,
         ease: 'power2.inOut',
       }, 0)
   };
@@ -50,12 +50,12 @@ function AnimationManager(){
     tl.to({}, { duration: 0.1, onStart: () => setStatus('tunnel') })
       .to(camera.position, {
         z: 3,
-        duration: 2,
+        duration: 4,
         ease: 'power2.inOut',
       }, 0)
       .to(camera.rotation, {
         y: 0,
-        duration: 2,
+        duration: 4,
         ease: 'power2.inOut',
       }, 0)
   };
@@ -72,12 +72,12 @@ function AnimationManager(){
      tl.to({}, { duration: 0.1, onStart: () => setStatus('tunnel') })
       .to(camera.position, {
         z: -3,
-        duration: 2,
+        duration: 5,
         ease: 'power2.inOut',
       }, 0)
       .to(camera.rotation, {
         y: Math.PI,
-        duration: 2,
+        duration: 5,
         ease: 'power2.inOut',
       }, 0)
   };
@@ -96,12 +96,12 @@ function AnimationManager(){
     tl.to({}, { duration: 0.1, onStart: () => setStatus('tunnel') })
       .to(camera.position, {
         z: 3,
-        duration: 2,
+        duration: 3,
         ease: 'power2.inOut',
       }, 0)
       .to(camera.rotation, {
         y: 0,
-        duration: 2,
+        duration: 3,
         ease: 'power2.inOut',
       }, 0)
   };
