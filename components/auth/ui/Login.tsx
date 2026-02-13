@@ -7,6 +7,7 @@ function Login(){
   const [loading , setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [feedback, setFeedback] = useState<{type:'error' | 'success' | null, text:string}>({type:null,text:''});
 
   const setView = useAuthStore((state) => state.setView);
   const triggerError = useAuthStore((state) => state.triggerError);
@@ -18,6 +19,7 @@ function Login(){
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setFeedback({ type: null, text: '' });
 
     try {
       
@@ -27,6 +29,7 @@ function Login(){
       if (username === "1" && password === "1") isSuccess=true
 
       if (isSuccess) {
+        setFeedback({ type: 'success', text: 'Login Successful! Redirecting...' });
         triggerSuccess();
         setTimeout(()=> {
           setDashboardOpen(true)
@@ -35,6 +38,7 @@ function Login(){
         
       } else {
         triggerError();
+        setFeedback({ type: 'error', text: 'Invalid Username or Password.' })
       }
 
     } catch (error) {
@@ -81,9 +85,15 @@ function Login(){
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
+
          <button type="submit" className={styles.button} disabled={loading }>
           {loading  ? "Authenticating..." : "Sign In"}
         </button>
+
+         <div className={`${styles.feedbackMessage} ${feedback.type === 'error' ? styles.feedbackError : feedback.type === 'success' ? styles.feedbackSuccess : ''}`}>
+          {feedback.text}
+        </div>
+        
     </form>
 
     <button 

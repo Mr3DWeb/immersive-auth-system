@@ -76,7 +76,7 @@ function AnimationManager(){
      tl.to({}, { duration: 0.1, onStart: () => setStatus('tunnel') })
       .to(camera.position, {
         z: -3,
-        duration: DURATION_MOVE+1,
+        duration: DURATION_MOVE,
         ease: 'power2.inOut',
       }, 0)
       .to(camera.rotation, {
@@ -100,7 +100,7 @@ function AnimationManager(){
     tl.to({}, { duration: 0.1, onStart: () => setStatus('tunnel') })
       .to(camera.position, {
         z: 3,
-        duration: DURATION_MOVE-1,
+        duration: DURATION_MOVE,
         ease: 'power2.inOut',
       }, 0)
       .to(camera.rotation, {

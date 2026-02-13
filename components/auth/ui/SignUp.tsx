@@ -6,16 +6,23 @@ const SignUp = () => {
   const { setView } = useAuthStore();
   const triggerSuccess = useAuthStore((state) => state.triggerSuccess);
   const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: 'error' | 'success' | null, text: string }>({
+    type: null,
+    text: ''
+  });
 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setFeedback({ type: null, text: '' });
+
     triggerSuccess();
-    // شبیه سازی ثبت نام
+    setFeedback({ type: 'success', text: 'Account Created! Redirecting...' });
+
     setTimeout(() => {
       setLoading(false);
-      setView('login'); // بعد از ثبت نام موفق به لاگین برگرد
+      setView('login');
     }, 1500);
   };
 
@@ -58,6 +65,10 @@ const SignUp = () => {
           {loading ? "Creating Account..." : "Sign Up"}
         </button>
       </form>
+
+      <div className={`${styles.feedbackMessage} ${feedback.type === 'error' ? styles.feedbackError : feedback.type === 'success' ? styles.feedbackSuccess : ''}`}>
+          {feedback.text}
+        </div>
 
       <button 
         onClick={() => setView('login')} 
