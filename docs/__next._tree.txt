@@ -1,3 +1,8 @@
-:HL["/immersive-auth-system/_next/static/chunks/7bd2265d80e7def6.css","style"]
+:HL["/immersive-auth-system/_next/static/chunks/1faee5ea2a0c5c4e.css","style"]
+:HL["/immersive-auth-system/_next/static/media/Parkinsans_Bold-s.p.f6f88af1.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/immersive-auth-system/_next/static/media/Parkinsans_ExtraBold-s.p.a8fcdb7b.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/immersive-auth-system/_next/static/media/Parkinsans_Light-s.p.5625079c.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/immersive-auth-system/_next/static/media/Parkinsans_Medium-s.p.db47b034.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/immersive-auth-system/_next/static/media/Parkinsans_Regular-s.p.861fb15c.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/immersive-auth-system/_next/static/chunks/a57fb967d496cc87.css","style"]
-0:{"buildId":"5s5aRfr8v3mEhi_gJFXM0","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":true},"staleTime":300}
+0:{"buildId":"Je-gosCmktc_ewJ27r8HK","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":true},"staleTime":300}
