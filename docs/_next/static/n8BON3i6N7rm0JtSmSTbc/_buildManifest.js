@@ -1,7 +1,12 @@
 self.__BUILD_MANIFEST = {
   "__rewrites": {
     "afterFiles": [],
-    "beforeFiles": [],
+    "beforeFiles": [
+      {
+        "source": "/immersive-auth-system//_next/:path+",
+        "destination": "/immersive-auth-system/_next/:path+"
+      }
+    ],
     "fallback": []
   },
   "sortedPages": [

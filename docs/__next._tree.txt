@@ -1,3 +1,3 @@
-:HL["/_next/static/chunks/7bd2265d80e7def6.css","style"]
-:HL["/_next/static/chunks/f63e241ab5f8f2bc.css","style"]
-0:{"buildId":"GxN2QPzJgxXuk_T5B8WWu","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":true},"staleTime":300}
+:HL["/immersive-auth-system/_next/static/chunks/7bd2265d80e7def6.css","style"]
+:HL["/immersive-auth-system/_next/static/chunks/f63e241ab5f8f2bc.css","style"]
+0:{"buildId":"n8BON3i6N7rm0JtSmSTbc","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":true},"staleTime":300}
